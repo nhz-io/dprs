@@ -15,13 +15,13 @@ module.exports = class DependencyResolver {
 
         if (nodes[node]) {
             if (nodes[node][RESOLVED]) {
-                this.resolved--
-                this.unresolved++
+                this.resolvedCount--
+                this.unresolvedCount++
             }
         }
         else {
             this.count++
-            this.unresolved++
+            this.unresolvedCount++
             nodes[node] = {}            
         }
 
@@ -32,7 +32,7 @@ module.exports = class DependencyResolver {
             if (!nodes[dep]) {
                 nodes[dep] = {}
                 this.count++
-                this.unresolved++
+                this.unresolvedCount++
             }
 
             nodes[node][dep] = nodes[dep]
@@ -53,26 +53,36 @@ module.exports = class DependencyResolver {
         return !Object.keys(nodes[node]).find(key => !nodes[node][key][RESOLVED])
     }
 
-    resolve(node) {
+    resolve(node, dependencies = []) {
         const {nodes} = this
 
-        if (!nodes[node] || !nodes[node][OK]) {
-            this.add(node)
-        }
+        this.add(node, dependencies)
 
         if (this.resolvable(node)) {
             nodes[node][RESOLVED] = true
-            this.resolved++
-            this.unresolved--
+            this.resolvedCount++
+            this.unresolvedCount--
         }
 
         return nodes[node][RESOLVED] && true
     }
 
+    all() {
+        return Object.keys(this.nodes)
+    }
+
+    resolved() {
+        return this.all().filter(node => this.nodes[node][RESOLVED])
+    }
+
+    unresolved() {
+        return this.all().filter(node => !this.nodes[node][RESOLVED])
+    }
+
     reset() {
         this.nodes = {}
         this.count = 0
-        this.resolved = 0
-        this.unresolved = 0
+        this.resolvedCount = 0
+        this.unresolvedCount = 0
     }
 }

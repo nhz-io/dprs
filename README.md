@@ -80,4 +80,4 @@ npm run report
 
 ### [MIT](LICENSE)
 
-## Version 1.0.0
+## Version 1.0.1

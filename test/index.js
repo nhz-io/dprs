@@ -7,8 +7,8 @@ test('constructor', t => {
 
     t.true(dprs instanceof DependencyResolver)
     t.is(dprs.count, 0)
-    t.is(dprs.resolved, 0)
-    t.is(dprs.unresolved, 0)
+    t.is(dprs.resolvedCount, 0)
+    t.is(dprs.unresolvedCount, 0)
     t.deepEqual(dprs.nodes, {})
 })
 
@@ -20,20 +20,20 @@ test('add', t => {
     dprs.add('foobar', ['foo', 'bar'])
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     dprs.add('foo', ['bar'])
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     dprs.add('bar')
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.deepEqual(JSON.parse(JSON.stringify(dprs.nodes)), {
         foobar: {
@@ -57,40 +57,40 @@ test('resolvable', t => {
     dprs.add('foobar', ['foo', 'bar'])
     
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     dprs.add('foo', ['bar'])
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     dprs.add('bar')
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.false(dprs.resolvable('missing'))
 
     t.true(dprs.resolvable('bar'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.false(dprs.resolvable('foo'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.false(dprs.resolvable('foobar'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 })
 
 test('resolve', t => {
@@ -101,60 +101,97 @@ test('resolve', t => {
     dprs.add('foobar', ['foo', 'bar'])
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     dprs.add('foo', ['bar'])
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.false(dprs.resolve('foobar'))    
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.false(dprs.resolve('foo'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.true(dprs.resolve('bar'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 2)
-    t.is(dprs.resolved, 1)
+    t.is(dprs.unresolvedCount, 2)
+    t.is(dprs.resolvedCount, 1)
 
     dprs.add('bar')
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 3)
-    t.is(dprs.resolved, 0)
+    t.is(dprs.unresolvedCount, 3)
+    t.is(dprs.resolvedCount, 0)
 
     t.true(dprs.resolve('bar'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 2)
-    t.is(dprs.resolved, 1)
+    t.is(dprs.unresolvedCount, 2)
+    t.is(dprs.resolvedCount, 1)
 
     t.false(dprs.resolve('foobar'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 2)
-    t.is(dprs.resolved, 1)
+    t.is(dprs.unresolvedCount, 2)
+    t.is(dprs.resolvedCount, 1)
 
     t.true(dprs.resolve('foo'))
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 1)
-    t.is(dprs.resolved, 2)
+    t.is(dprs.unresolvedCount, 1)
+    t.is(dprs.resolvedCount, 2)
 
     t.true(dprs.resolve('foobar'))    
 
     t.is(dprs.count, 3)
-    t.is(dprs.unresolved, 0)
-    t.is(dprs.resolved, 3)
+    t.is(dprs.unresolvedCount, 0)
+    t.is(dprs.resolvedCount, 3)
+})
+
+
+test('resolved/unresolved/all', t => {
+    const dprs = new DependencyResolver()
+
+    t.deepEqual(dprs.all(), [])
+
+    dprs.add('foobar', ['foo', 'bar'])
+
+    t.deepEqual(dprs.all(), ['foobar', 'foo', 'bar'])
+    
+    dprs.add('foo', ['bar'])
+    dprs.add('bar')
+
+    t.deepEqual(dprs.unresolved(), ['foobar', 'foo', 'bar'])
+    t.deepEqual(dprs.resolved(), [])
+
+    dprs.resolve('bar')
+
+    t.deepEqual(dprs.unresolved(), ['foobar', 'foo'])
+    t.deepEqual(dprs.resolved(), ['bar'])
+
+    dprs.resolve('foobar')
+    
+    t.deepEqual(dprs.unresolved(), ['foobar', 'foo'])
+    t.deepEqual(dprs.resolved(), ['bar'])
+
+    dprs.resolve('foo')
+
+    t.deepEqual(dprs.unresolved(), ['foobar'])
+    t.deepEqual(dprs.resolved(), ['foo', 'bar'])
+
+    dprs.resolve('foobar')
+
+    t.deepEqual(dprs.unresolved(), [])
+    t.deepEqual(dprs.resolved(), ['foobar', 'foo', 'bar'])
 })
