@@ -8,36 +8,33 @@ const RESOLVED = Symbol.for('RESOLVED')
 module.exports = class DependencyResolver {
     constructor() {
         this.reset()
+
+        Object.defineProperties(this, {
+            unresolvedCount: {
+                enumerable: true,
+                get: () => this.unresolved().length
+            },
+            resolvedCount: {
+                enumerable: true,
+                get: () => this.resolved().length
+            },
+            allCount: {
+                enumerable: true,
+                get: () => this.all().length
+            },
+        })
     }
 
     add(node, dependencies = []) {
         const {nodes} = this
 
-        if (nodes[node]) {
-            if (nodes[node][RESOLVED]) {
-                this.resolvedCount--
-                this.unresolvedCount++
-            }
-        }
-        else {
-            this.allCount++
-            this.unresolvedCount++
-            nodes[node] = {}            
-        }
-
+        nodes[node] = nodes[node] || {}
         nodes[node][OK] = true
         nodes[node][RESOLVED] = false
 
         dependencies.forEach(dep => {
-            if (!nodes[dep]) {
-                nodes[dep] = {}
-                this.allCount++
-                this.unresolvedCount++
-            }
-
+            nodes[dep] = nodes[dep] || {}
             nodes[node][dep] = nodes[dep]
-
-            return node
         })
 
         return this
@@ -61,8 +58,6 @@ module.exports = class DependencyResolver {
         }
         
         nodes[node][RESOLVED] = true
-        this.resolvedCount++
-        this.unresolvedCount--
 
         return true
     }
@@ -81,8 +76,5 @@ module.exports = class DependencyResolver {
 
     reset() {
         this.nodes = {}
-        this.allCount = 0
-        this.resolvedCount = 0
-        this.unresolvedCount = 0
     }
 }
